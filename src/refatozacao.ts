@@ -1,38 +1,80 @@
-// 1. Definição do contrato de dados usando 'type'
-type ConsumidorDTO = {
-  nome: string;
-  idade: number;
-  email: string;
-};
+class Consumidor {
+  private _nome: string;
+  private _idade: number;
+  private _email: string;
+
+  constructor(nome: string, idade: number, email: string) {
+    this._nome = Consumidor.validarNome(nome);
+    this._idade = Consumidor.validarIdade(idade);
+    this._email = Consumidor.validarEmail(email);
+  }
+
+  private static validarNome(nome: string): string {
+    const nomeLimpo = nome?.trim();
+    if (!nomeLimpo) {
+      throw new Error("O nome não pode ser vazio.");
+    }
+    return nomeLimpo;
+  }
+
+  private static validarIdade(idade: number): number {
+    if (!Number.isInteger(idade) || idade < 0 || idade > 150) {
+      throw new Error(`Idade inválida: ${idade}. Informe um inteiro entre 0 e 150.`);
+    }
+    return idade;
+  }
+
+  private static validarEmail(email: string): string {
+    const emailLimpo = email?.trim();
+    if (!emailLimpo || !emailLimpo.includes("@")) {
+      throw new Error(`E-mail inválido: ${email}`);
+    }
+    return emailLimpo;
+  }
+
+  get nome(): string {
+    return this._nome;
+  }
+
+  set nome(valor: string) {
+    this._nome = Consumidor.validarNome(valor);
+  }
+
+  get idade(): number {
+    return this._idade;
+  }
+
+  set idade(valor: number) {
+    this._idade = Consumidor.validarIdade(valor);
+  }
+
+  get email(): string {
+    return this._email;
+  }
+
+  set email(valor: string) {
+    this._email = Consumidor.validarEmail(valor);
+  }
+
+  formatarExibicao(): string {
+    return `Consumidor: ${this._nome} (${this._idade} anos) - ${this._email}`;
+  }
+}
 
 // Array para armazenar os consumidores
-const listaConsumidores: ConsumidorDTO[] = [];
-
-// 2. Função solta para criar o objeto consumidor
-function criarConsumidor(nome: string, idade: number, email: string): ConsumidorDTO {
-  return {
-    nome,
-    idade,
-    email
-  };
-}
-
-// 3. Função solta para formatar a exibição
-function formatarExibicao(consumidor: ConsumidorDTO): string {
-  return `Consumidor: ${consumidor.nome} (${consumidor.idade} anos) - ${consumidor.email}`;
-}
+const listaConsumidores: Consumidor[] = [];
 
 // 4. Função para calcular a média de idade
-function calcularMediaIdade(consumidores: ConsumidorDTO[]): number {
+function calcularMediaIdade(consumidores: Consumidor[]): number {
   if (consumidores.length === 0) return 0;
   const somaIdades = consumidores.reduce((acc, c) => acc + c.idade, 0);
   return somaIdades / consumidores.length;
 }
 
 // 5. Função para encontrar extremos de idade
-function obterExtremosIdade(consumidores: ConsumidorDTO[]): { maisVelho: ConsumidorDTO | undefined; maisNovo: ConsumidorDTO | undefined } {
-  let maisVelho: ConsumidorDTO | undefined = consumidores[0];
-  let maisNovo: ConsumidorDTO | undefined = consumidores[0];
+function obterExtremosIdade(consumidores: Consumidor[]): { maisVelho: Consumidor | undefined; maisNovo: Consumidor | undefined } {
+  let maisVelho: Consumidor | undefined = consumidores[0];
+  let maisNovo: Consumidor | undefined = consumidores[0];
 
   if (maisVelho != undefined && maisNovo != undefined) {
 
@@ -46,14 +88,14 @@ function obterExtremosIdade(consumidores: ConsumidorDTO[]): { maisVelho: Consumi
 }
 
 // --- EXECUÇÃO DE TESTE ---
-listaConsumidores.push(criarConsumidor("Ana Silva", 30, "ana@email.com"));
-listaConsumidores.push(criarConsumidor("Carlos Souza", 22, "carlos@email.com"));
-listaConsumidores.push(criarConsumidor("Mariana Lima", 45, "mariana@email.com"));
-listaConsumidores.push(criarConsumidor("Roberto Alves", 19, "roberto@email.com"));
-listaConsumidores.push(criarConsumidor("Fernanda Dias", 33, "fernanda@email.com"));
+listaConsumidores.push(new Consumidor("Ana Silva", 30, "ana@email.com"));
+listaConsumidores.push(new Consumidor("Carlos Souza", 22, "carlos@email.com"));
+listaConsumidores.push(new Consumidor("Mariana Lima", 45, "mariana@email.com"));
+listaConsumidores.push(new Consumidor("Roberto Alves", 19, "roberto@email.com"));
+listaConsumidores.push(new Consumidor("Fernanda Dias", 33, "fernanda@email.com"));
 
 console.log("=== LISTA DE CONSUMIDORES ===");
-listaConsumidores.forEach(c => console.log(formatarExibicao(c)));
+listaConsumidores.forEach(c => console.log(c.formatarExibicao()));
 
 console.log("\n=== ANÁLISE ESTATÍSTICA ===");
 console.log(`Média das Idades: ${calcularMediaIdade(listaConsumidores).toFixed(1)} anos`);
